@@ -1464,6 +1464,31 @@ class Toolbox {
 
 
    /**
+    * Determine if APCu is usable checking extension existence
+    * Using same logic than Zend\Cache\Storage\Adapter\Apcu
+    *
+    * @since 9.4
+    *
+    * @return boolean
+   **/
+   static function canUseApcu() {
+      if (!function_exists('apcu_fetch')) {
+         return false;
+      }
+      if (version_compare(phpversion('apcu'), '5.1.0', '<')) {
+         return false;
+      }
+      if (!ini_get('apc.enabled')) {
+         return false;
+      }
+      if (PHP_SAPI === 'cli' && !ini_get('apc.enable_cli')) {
+         return false;
+      }
+      return true;
+   }
+
+
+   /**
     * Determine if Imap/Pop is usable checking extension existence
     *
     * @return boolean

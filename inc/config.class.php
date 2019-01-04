@@ -2976,7 +2976,7 @@ class Config extends CommonDBTM {
          $opt['options']['namespace'] = $namespace;
       }
       if (!isset($opt['adapter'])) {
-         if (function_exists('apcu_fetch')) {
+         if (Toolbox::canUseApcu()) {
             $opt['adapter'] = (version_compare(PHP_VERSION, '7.0.0') >= 0) ? 'apcu' : 'apc';
          } else if (function_exists('wincache_ucache_add')) {
             $opt['adapter'] = 'wincache';
