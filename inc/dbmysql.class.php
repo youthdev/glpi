@@ -500,12 +500,20 @@ class DBmysql {
             $formattedQuerytorun = $formattedQuery;
 
             // Do not use the $DB->query
-            if ($this->query($formattedQuerytorun)) { //if no success continue to concatenate
-               $formattedQuery = "";
-               $lastresult     = true;
-            } else {
-               $lastresult = false;
+            $allow_retry=3;
+            do {
+                if ($this->query($formattedQuerytorun)) { //if no success continue to concatenate
+                    $formattedQuery = "";
+                    $lastresult = true;
+                } else {
+                    $lastresult = false;
+                    // Sleep random time when deadlock
+                    if ($this->errno() == 1213) {
+                        sleep(rand(1, 10));
+                    }
+                }
             }
+            while(!$lastresult && $this->errno() == 1213 && --$allow_retry > 0);
          }
       }
 
