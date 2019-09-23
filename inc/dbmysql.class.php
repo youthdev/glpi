@@ -486,8 +486,8 @@ class DBmysql {
       }
 
       $formattedQuery = "";
-      $lastresult     = false;
-      while (!feof($DBf_handle)) {
+      $lastresult     = null;
+      while (!feof($DBf_handle) && ($lastresult === true || $lastresult === null)) {
          // specify read length to be able to read long lines
          $buffer = fgets($DBf_handle, 102400);
 
