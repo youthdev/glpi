@@ -500,20 +500,27 @@ class DBmysql {
             $formattedQuerytorun = $formattedQuery;
 
             // Do not use the $DB->query
-            $allow_retry=3;
+            $allow_deadlock_retry=3; //Retry in case of deadlock
+            $allow_general_retry=2;
             do {
-                if ($this->query($formattedQuerytorun)) { //if no success continue to concatenate
-                    $formattedQuery = "";
-                    $lastresult = true;
-                } else {
-                    $lastresult = false;
-                    // Sleep random time when deadlock
-                    if ($this->errno() == 1213) {
-                        sleep(rand(1, 10));
+                do {
+                    if ($this->query($formattedQuerytorun)) { //if no success continue to concatenate
+                        $formattedQuery = "";
+                        $lastresult = true;
+                    } else {
+                        $lastresult = false;
+                        // Sleep random time when deadlock
+                        if ($this->errno() == 1213) {
+                            sleep(rand(1, 10));
+                        }
                     }
                 }
+                while(!$lastresult && $this->errno() == 1213 && --$allow_deadlock_retry > 0);
+                if (!$lastresult) {
+                    sleep(3);
+                }
             }
-            while(!$lastresult && $this->errno() == 1213 && --$allow_retry > 0);
+            while(!$lastresult && --$allow_general_retry > 0);
          }
       }
 
