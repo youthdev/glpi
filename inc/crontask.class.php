@@ -808,7 +808,7 @@ class CronTask extends CommonDBTM{
       }
 
       $nom = "glpicron." . intval(time()/HOUR_TIMESTAMP-340000);
-      $fp = fopen("/tmp/" . $nom, "r+");
+      $fp = fopen("/tmp/" . $nom, "w+");
 
       if (flock($fp, LOCK_EX)) {
          for ($i=1; $i<=$max; $i++) {
@@ -872,6 +872,7 @@ class CronTask extends CommonDBTM{
       }
 
       fclose($fp);
+      unlink("/tmp/" . $nom);
       return $taskname;
    }
 
