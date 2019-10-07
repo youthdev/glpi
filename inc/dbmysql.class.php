@@ -681,12 +681,7 @@ class DBmysql {
     * @return boolean
     */
    public function getLock($name) {
-      $name          = addslashes($this->dbdefault.'.'.$name);
-      $query         = "SELECT GET_LOCK('$name', 0)";
-      $result        = $this->query($query);
-      list($lock_ok) = $this->fetch_row($result);
-
-      return $lock_ok;
+      throw new Exception('Table lock does not supported in Galera database');
    }
 
    /**
@@ -699,12 +694,7 @@ class DBmysql {
     * @return boolean
     */
    public function releaseLock($name) {
-      $name          = addslashes($this->dbdefault.'.'.$name);
-      $query         = "SELECT RELEASE_LOCK('$name')";
-      $result        = $this->query($query);
-      list($lock_ok) = $this->fetch_row($result);
-
-      return $lock_ok;
+       throw new Exception('Table lock does not supported in Galera database');
    }
 
    /**

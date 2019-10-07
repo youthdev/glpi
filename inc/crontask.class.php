@@ -807,7 +807,10 @@ class CronTask extends CommonDBTM{
          }
       }
 
-      if (self::get_lock()) {
+      $nom = "glpicron." . intval(time()/HOUR_TIMESTAMP-340000);
+      $fp = fopen("/tmp/" . $nom, "r+");
+
+      if (flock($fp, LOCK_EX)) {
          for ($i=1; $i<=$max; $i++) {
             $prefix = (abs($mode) == self::MODE_EXTERNAL ? __('External')
                                                          : __('Internal'));
@@ -862,12 +865,13 @@ class CronTask extends CommonDBTM{
             }
          } // end for
          $_SESSION["glpicronuserrunning"]='';
-         self::release_lock();
+         flock($fp, LOCK_UN);
 
       } else {
-         Toolbox::logInFile('cron', __("Can't get DB lock")."\n");
+         Toolbox::logInFile('cron', __("Can't get flock")."\n");
       }
 
+      fclose($fp);
       return $taskname;
    }
 
